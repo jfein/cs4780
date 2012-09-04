@@ -6,11 +6,11 @@ Created on Aug 29, 2012
 import heapq
 import random
 import operator
-import sys
 import time
 
 from sim_funcs import *
 from util import *
+
 
 DISTANCE_CACHE = {}
 SONG_DATA = load_song_data('song_mapping.txt')
@@ -38,7 +38,7 @@ def find_knn(k, test_vector, training_examples, sim_func):
         heapq.heappush(heap, (dist, example))
 
     knn = [heapq.heappop(heap) for _ in xrange(k)]
-    return None
+    return knn
 
 
 def construct_ranking_vector(knn_pairs, use_weighted):
