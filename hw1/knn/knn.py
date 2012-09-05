@@ -35,10 +35,10 @@ def find_knn(k, test_vector, training_examples, sim_func):
     heap = []
     for example in training_examples:
         dist = sim_func(test_vector, example)
-        heapq.heappush(heap, (dist, example))
+        #heapq.heappush(heap, (dist, example))
+        heap.append((dist, example))
 
-    knn = [heapq.heappop(heap) for _ in xrange(k)]
-    return knn
+    return heapq.nsmallest(k, heap, key=operator.itemgetter(0))
 
 
 def construct_ranking_vector(knn_pairs, use_weighted):
