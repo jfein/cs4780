@@ -1,27 +1,44 @@
 import math
+import pickle
 
-
+cache_file = "cache.dat"
 CACHE = {}
 
 
-def cache_gen_key(u1, u2):
+def load_cache():
+    global CACHE
+    try:
+        f = open(cache_file, 'r')
+        CACHE = pickle.load(f)
+        f.close()
+    except IOError as e:
+        CACHE = {}
+
+        
+def save_cache():
+    f = open(cache_file, 'w')
+    pickle.dump(CACHE, f)
+    f.close()
+    
+
+def cache_gen_key(u1, u2, type):
     s = sorted([u1, u2])
-    return "{0}-{1}".format(s[0], s[1])
+    return "{0}-{1}-{2}".format(s[0], s[1], type)
     
     
-def cache_get(u1, u2):
-    return CACHE.get(cache_gen_key(u1, u2))
+def cache_get(u1, u2, type):
+    return CACHE.get(cache_gen_key(u1, u2, type))
 
     
-def cache_set(u1, u2, v):
+def cache_set(u1, u2, type, v):
     global CACHE
-    k = cache_gen_key(u1, u2)
+    k = cache_gen_key(u1, u2, type)
     CACHE[k] = v
 
     
-def inverse_euclidean(u1, v1, u2, v2, use_cache=True):
-    cache = cache_get(u1, u2)
-    if cache is not None and use_cache:
+def inverse_euclidean(u1, v1, u2, v2):
+    cache = cache_get(u1, u2, 'inverse_euclidean')
+    if cache is not None:
         return cache
 
     squared_sum = 0.0
@@ -39,13 +56,13 @@ def inverse_euclidean(u1, v1, u2, v2, use_cache=True):
     else:
         ret = 1 / math.sqrt(squared_sum)
         
-    cache_set(u1, u2, ret)
+    cache_set(u1, u2, 'inverse_euclidean', ret)
     return ret
 
     
-def dot_product(u1, v1, u2, v2, use_cache=True):
-    cache = cache_get(u1, u2)
-    if not cache is None and use_cache:
+def dot_product(u1, v1, u2, v2):
+    cache = cache_get(u1, u2, 'dot_product')
+    if not cache is None:
         return cache
         
     dp = 0.0
@@ -57,13 +74,13 @@ def dot_product(u1, v1, u2, v2, use_cache=True):
         if not song_id in v1:
             dp += v1.get(song_id, 0) * plays
             
-    cache_set(u1, u2, dp)
+    cache_set(u1, u2, 'dot_product', dp)
     return dp
 
     
-def cos(u1, v1, u2, v2, use_cache=True):
-    cache = cache_get(u1, u2)
-    if cache is not None and use_cache:
+def cos(u1, v1, u2, v2):
+    cache = cache_get(u1, u2, 'cos')
+    if cache is not None:
         return cache
         
     magnitude_v1 = 0.0
@@ -77,7 +94,7 @@ def cos(u1, v1, u2, v2, use_cache=True):
     magnitude_v1 = math.sqrt(magnitude_v1)
     magnitude_v2 = math.sqrt(magnitude_v2)
 
-    ret = dot_product(u1, v1, u2, v2, False) / (magnitude_v1 * magnitude_v2)
+    ret = dot_product(u1, v1, u2, v2) / (magnitude_v1 * magnitude_v2)
     
-    cache_set(u1, u2, ret)
+    cache_set(u1, u2, 'cos', ret)
     return ret

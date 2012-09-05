@@ -62,6 +62,7 @@ elif mode == modes[4]:
         print 'Invalid similarity metric flag'
         print_usage_and_quit()
 
+    # Load cache
     if len(sys.argv) >= 6 and sys.argv[5] != '0':
         load_cache()
         print 'Loading cache from file'
@@ -71,7 +72,9 @@ elif mode == modes[4]:
     # Run knn
     prec_at_10 = baseline_knn(k, sim_func, weighted)
 
+    # Save cache
     save_cache()
+    
     print 'Precision@10 for k={k}, {weighted_str}, ' \
           '{sim_func_str} similarity:\n{prec_at_10}'.format(**locals())
 
