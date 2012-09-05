@@ -64,7 +64,7 @@ elif mode == modes[4]:
 
     # Load cache
     if len(sys.argv) >= 6 and sys.argv[5] != '0':
-        load_cache()
+        load_cache(sim_func_str.replace(" ", "_"))
         print 'Loading cache from file'
     else:
         print 'Not loading cache from file'
@@ -73,8 +73,8 @@ elif mode == modes[4]:
     prec_at_10 = baseline_knn(k, sim_func, weighted)
 
     # Save cache
-    save_cache()
-    
+    save_cache(sim_func_str.replace(" ", "_"))
+
     print 'Precision@10 for k={k}, {weighted_str}, ' \
           '{sim_func_str} similarity:\n{prec_at_10}'.format(**locals())
 
