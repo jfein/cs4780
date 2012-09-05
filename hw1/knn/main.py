@@ -1,4 +1,5 @@
 import sys
+from sim_funcs import *
 from knn import baseline_random, baseline_most_popular, baseline_knn, user_query
 
 def print_usage_and_quit():

@@ -3,7 +3,6 @@ import random
 import operator
 import time
 
-from sim_funcs import *
 from util import *
 
 
