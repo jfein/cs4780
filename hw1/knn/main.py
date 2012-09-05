@@ -1,6 +1,6 @@
 import sys
 from sim_funcs import *
-from knn import baseline_random, baseline_most_popular, baseline_knn, user_query
+from knn import baseline_random, baseline_most_popular, baseline_knn, user_query, artist_query
 
 def print_usage_and_quit():
     print 'Usage python knn.py -mode [...]'
@@ -18,7 +18,7 @@ def print_usage_and_quit():
     print 'weighted = 0 to use non-weighted, 1 for anything else'
     print 'sim_metric = 0 for inverse euclidean, 1 for dot product, 2 for cosine'
     quit()
-    
+
 if len(sys.argv) == 1:
     print_usage_and_quit()
 
@@ -31,11 +31,11 @@ if mode not in modes:
 # Baseline random
 if mode == modes[0]:
     baseline_random()
-    
+
 # Baseline most popular
 elif mode == modes[1]:
     baseline_most_popular()
-    
+
 # Run KNN
 elif mode == modes[4]:
     if len(sys.argv) < 5:
@@ -62,9 +62,16 @@ elif mode == modes[4]:
         print 'Invalid similarity metric flag'
         print_usage_and_quit()
 
+    if len(sys.argv) >= 6 and sys.argv[5] != '0':
+        load_cache()
+        print 'Loading cache from file'
+    else:
+        print 'Not loading cache from file'
+
     # Run knn
     prec_at_10 = baseline_knn(k, sim_func, weighted)
-    
+
+    save_cache()
     print 'Precision@10 for k={k}, {weighted_str}, ' \
           '{sim_func_str} similarity:\n{prec_at_10}'.format(**locals())
 
@@ -94,3 +101,6 @@ else:
     if mode == '-user':
         user_id = int(sys.argv[2])
         user_query(user_id, k, sim_func, weighted)
+    elif mode == '-artist':
+        artist_name = sys.argv[2]
+        artist_query(artist_name, k, sim_func, weighted)
