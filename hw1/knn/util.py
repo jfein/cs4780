@@ -1,15 +1,9 @@
-'''
-Created on Sep 4, 2012
-
-@author: Will
-'''
-
 def load_song_data(filename):
     f = open(filename, 'r')
     song_data = {}
     for song_datum in f:
-        id, title, artist = song_datum.split("\t")
-        song_data[id] = (title, artist)
+        id, title, artist = [x.strip() for x in song_datum.split("\t")]
+        song_data[int(id)] = (title, artist)
 
     return song_data
 

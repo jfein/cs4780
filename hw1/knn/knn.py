@@ -20,7 +20,7 @@ def find_knn(k, test_vector, training_examples, sim_func):
     Find the k nearest neighbors of test_vector in the
     training_examples. Distance is determined
     by sim_func. Sim_func must be a function that
-    takes in two vectors (Represented by dictionaries of
+    takes in two vectors Represented by dictionaries of
     song id -> number of times played)
     and returns a distance, with lower being closer
 
@@ -95,9 +95,10 @@ def recommend_songs(k, test_vector, training_examples, sim_func, use_weighted):
     # and take the top 10, making sure to 
     # check that the user hasn't already played that song
 
-    recommendations = sorted(R.iteritems(), key=operator.itemgetter(1))
-    while len(recommendations) < 10 and len(recommendations) > 0:
-        recommendation, _ = recommendations.pop()
+    sorted_R = sorted(R.iteritems(), key=operator.itemgetter(1))
+    recommendations = []
+    while len(recommendations) < 10 and len(sorted_R) > 0:
+        recommendation, _ = sorted_R.pop()
         if recommendation not in test_vector:
             recommendations.append(recommendation)
 
@@ -110,14 +111,23 @@ def user_query(training, user_id, k, sim_func, use_weighted):
     del training[user_id]
     training_examples = training.values()
 
-    print test_vector
     # Go through and find the most played songs for user
     most_played = sorted(test_vector.iteritems(), key=operator.itemgetter(1),
                           reverse=True)
     print 'Most played for user', user_id
-    print 'Song ID\tPlays'
+    print "Song ID\tTitle\tArtists\tPlays"
     for song_id, plays in most_played[:10]:
-        print song_id, '\t', plays
+        title, artist = SONG_DATA[song_id]
+        print song_id, "\t", title, "\t", artist, '\t', plays
+
+    recommendations = recommend_songs(k, test_vector, training_examples, sim_func, use_weighted)
+    print "\n\nTop 10 Recommended Songs for user ", user_id
+    print "Song ID\tTitle\tArtists\t"
+    for song_id in recommendations:
+        title, artist = SONG_DATA[song_id]
+        print song_id, "\t", title, "\t", artist
+
+
 
 
 def baseline_random(training, test):
