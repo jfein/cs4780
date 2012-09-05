@@ -8,7 +8,7 @@ CACHE = {}
 def load_cache(sim_func_str):
     global CACHE
     try:
-        f = open(sim_func_str + " _ " + cache_file, 'rb')
+        f = open(sim_func_str + "_" + cache_file, 'rb')
         CACHE = pickle.load(f)
         f.close()
     except IOError as e:
@@ -16,7 +16,7 @@ def load_cache(sim_func_str):
 
 
 def save_cache(sim_func_str):
-    f = open(sim_func_str + " _ " + cache_file, 'wb')
+    f = open(sim_func_str + "_" + cache_file, 'wb')
     pickle.dump(CACHE, f, protocol=2)
     f.close()
 
