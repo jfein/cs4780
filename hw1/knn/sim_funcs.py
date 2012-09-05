@@ -19,9 +19,9 @@ def cache_set(u1, u2, v):
     CACHE[k] = v
 
     
-def inverse_euclidean(u1, v1, u2, v2):
+def inverse_euclidean(u1, v1, u2, v2, use_cache=True):
     cache = cache_get(u1, u2)
-    if not cache is None:
+    if cache is not None and use_cache:
         return cache
 
     squared_sum = 0.0
@@ -43,9 +43,9 @@ def inverse_euclidean(u1, v1, u2, v2):
     return ret
 
     
-def dot_product(u1, v1, u2, v2):
+def dot_product(u1, v1, u2, v2, use_cache=True):
     cache = cache_get(u1, u2)
-    if not cache is None:
+    if not cache is None and use_cache:
         return cache
         
     dp = 0.0
@@ -61,9 +61,9 @@ def dot_product(u1, v1, u2, v2):
     return dp
 
     
-def cos(u1, v1, u2, v2):
+def cos(u1, v1, u2, v2, use_cache=True):
     cache = cache_get(u1, u2)
-    if not cache is None:
+    if cache is not None and use_cache:
         return cache
         
     magnitude_v1 = 0.0
@@ -77,7 +77,7 @@ def cos(u1, v1, u2, v2):
     magnitude_v1 = math.sqrt(magnitude_v1)
     magnitude_v2 = math.sqrt(magnitude_v2)
 
-    ret = dot_product(v1, v2) / (magnitude_v1 * magnitude_v2)
+    ret = dot_product(u1, v1, u2, v2, False) / (magnitude_v1 * magnitude_v2)
     
     cache_set(u1, u2, ret)
     return ret
