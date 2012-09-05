@@ -7,7 +7,7 @@ from util import *
 
 
 SONG_DATA = load_song_data('song_mapping.txt')
-training = parse_training('user_train.txt')
+training = parse_training('user_training_wheels.txt')
 test = parse_test('user_test.txt')
 
 
@@ -34,7 +34,7 @@ def find_knn(k, user_k, user_v, sim_func):
             heap.append((dist, example_v))
 
     # Extract the k closest examples
-    return heapq.nsmallest(k, heap, key=operator.itemgetter(0))
+    return heapq.nlargest(k, heap, key=operator.itemgetter(0))
 
 
 def construct_ranking_vector(knn_pairs, use_weighted):
@@ -79,13 +79,13 @@ def recommend_songs(k, user_k, user_v, sim_func, use_weighted):
     '''
     Returns a list of the top 10 recommended songs
     '''
-    
+
     # Find knn
     start = time.time()
     knn_pairs = find_knn(k, user_k, user_v, sim_func)
     end = time.time()
     #print 'finding knn took', end - start, 'seconds'
-    
+
     # Find ranking vector
     start = time.time()
     R = construct_ranking_vector(knn_pairs, use_weighted)
@@ -103,7 +103,7 @@ def recommend_songs(k, user_k, user_v, sim_func, use_weighted):
             recommendations.append(recommendation)
     end = time.time()
     #print 'finding top 10 recommendations took', end - start, 'seconds'
-    
+
     return recommendations
 
 
@@ -126,7 +126,7 @@ def user_query(user_k, k, sim_func, use_weighted):
         title, artist = SONG_DATA[song_id]
         print song_id, "\t", title, "\t", artist
 
-        
+
 def artist_query(artist, k, sim_func, use_weighted):
     # First need to build artist query. Go through
     # and if either the artist or song title have 
@@ -150,7 +150,7 @@ def artist_query(artist, k, sim_func, use_weighted):
         title, artist = SONG_DATA[song_id]
         print song_id, "\t", title, "\t", artist
 
-        
+
 def baseline_random():
     # first we need to get all the song ids
     song_ids = SONG_DATA.keys()
@@ -194,15 +194,15 @@ def baseline_most_popular():
 def baseline_knn(k, sim_func, use_weighted):
     total_prec_at_10 = 0.0
     counter = 0
-    
+
     print len(training)
-    
+
     # Get recommendations for each user vector
     for user_k, user_v in training.iteritems():
         counter += 1
         if counter % 100 == 0:
             print counter
-            
+
         recommendations = recommend_songs(k, user_k, user_v, sim_func, use_weighted)
 
         matched = 0
