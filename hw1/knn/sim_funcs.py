@@ -30,10 +30,9 @@ def inverse_euclidean(u1, v1, u2, v2):
         unquared_sum = (plays - v2.get(song_id, 0))
         squared_sum += unquared_sum ** 2
     # Pass through v2
-    for sing_id, plays in v2.iteritems():
+    for song_id, plays in v2.iteritems():
         if not song_id in v1:
-            unquared_sum = (v1.get(song_id, 0) - plays)
-            squared_sum += unquared_sum ** 2
+            squared_sum += plays ** 2
 
     if squared_sum == 0:
         ret = 1
@@ -54,7 +53,7 @@ def dot_product(u1, v1, u2, v2):
     for song_id, plays in v1.iteritems():
         dp += plays * v2.get(song_id, 0)
     # Pass through v2
-    for sing_id, plays in v2.iteritems():
+    for song_id, plays in v2.iteritems():
         if not song_id in v1:
             dp += v1.get(song_id, 0) * plays
             

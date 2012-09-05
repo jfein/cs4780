@@ -79,6 +79,7 @@ def recommend_songs(k, user_k, user_v, sim_func, use_weighted):
     '''
     Returns a list of the top 10 recommended songs
     '''
+    
     # Find knn
     start = time.time()
     knn_pairs = find_knn(k, user_k, user_v, sim_func)
@@ -125,6 +126,7 @@ def user_query(user_k, k, sim_func, use_weighted):
         title, artist = SONG_DATA[song_id]
         print song_id, "\t", title, "\t", artist
 
+        
 def artist_query(artist, k, sim_func, use_weighted):
     # First need to build artist query. Go through
     # and if either the artist or song title have 
@@ -142,12 +144,13 @@ def artist_query(artist, k, sim_func, use_weighted):
         title, song_artist = SONG_DATA[song_id]
         print title, "\t", song_artist
 
-    recommendations = recommend_songs(k, vector, training.values(), sim_func, use_weighted)
+    recommendations = recommend_songs(k, artist_lower, vector, sim_func, use_weighted)
     print "\n\nTop 10 Recommended Songs"
     for song_id in recommendations:
         title, artist = SONG_DATA[song_id]
         print song_id, "\t", title, "\t", artist
 
+        
 def baseline_random():
     # first we need to get all the song ids
     song_ids = SONG_DATA.keys()
