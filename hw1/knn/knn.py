@@ -87,21 +87,17 @@ def recommend_songs(k, user_k, user_v, sim_func, use_weighted):
     
     # Find ranking vector
     start = time.time()
-    knn_pairs = find_knn(k, test_vector, training_examples, sim_func)
-    after_knn = time.time()
-    #print 'finding knn took', after_knn - start, 'seconds'
     R = construct_ranking_vector(knn_pairs, use_weighted)
     end = time.time()
     #print 'constructing r took', end - start, 'seconds'
 
-    # Now we just sort recommendations
-    # and take the top 10, making sure to 
-    # check that the user hasn't already played that song
+    # Sort and take top 10 recommendations
     start = time.time()
     sorted_R = sorted(R.iteritems(), key=operator.itemgetter(1))
     recommendations = []
     while len(recommendations) < 10 and len(sorted_R) > 0:
         recommendation, _ = sorted_R.pop()
+        # Don't include those the user has listened to
         if recommendation not in user_v:
             recommendations.append(recommendation)
     end = time.time()

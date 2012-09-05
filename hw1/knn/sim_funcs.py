@@ -10,11 +10,11 @@ def cache_gen_key(u1, u2):
     
     
 def cache_get(u1, u2):
-    return None
     return CACHE.get(cache_gen_key(u1, u2))
 
     
 def cache_set(u1, u2, v):
+    global CACHE
     k = cache_gen_key(u1, u2)
     CACHE[k] = v
 
