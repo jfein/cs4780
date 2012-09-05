@@ -7,11 +7,16 @@ Created on Sep 4, 2012
 import math
 
 def inverse_euclidean(v1, v2):
-    keys = set(v1.keys() + v2.keys())
     squared_sum = 0.0
-    for song_id in keys:
-        unquared_sum = (v1.get(song_id, 0) - v2.get(song_id, 0))
+    # Pass through v1
+    for song_id, plays in v1.iteritems():
+        unquared_sum = (plays - v2.get(song_id, 0))
         squared_sum += unquared_sum ** 2
+    # Pass through v2
+    for sing_id, plays in v2.iteritems():
+        if not song_id in v1:
+            unquared_sum = (v1.get(song_id, 0) - plays)
+            squared_sum += unquared_sum ** 2
 
     if squared_sum == 0:
         return 1
