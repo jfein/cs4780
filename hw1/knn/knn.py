@@ -37,7 +37,7 @@ def find_knn(k, user_k, user_v, sim_func):
     return heapq.nlargest(k, heap, key=operator.itemgetter(0))
 
 
-def construct_ranking_vector(knn_pairs, use_weighted):
+def construct_ranking_vector(knn_pairs, use_weighted, normalize=False):
     '''
     Construct the ranking vector R.
     @param knn_pairs: A list of (dist, example) pairs where
@@ -51,6 +51,9 @@ def construct_ranking_vector(knn_pairs, use_weighted):
     '''
 
     R = {}
+    for i, (dist, example) in enumerate(knn_pairs):
+        pass
+
     k = float(len(knn_pairs))
     total_dist = 0.0
     for dist, example in knn_pairs:
@@ -195,13 +198,14 @@ def baseline_knn(k, sim_func, use_weighted):
     total_prec_at_10 = 0.0
     counter = 0
 
-    print len(training)
+    #print len(training)
 
     # Get recommendations for each user vector
     for user_k, user_v in training.iteritems():
         counter += 1
         if counter % 100 == 0:
-            print counter
+            pass
+            #print counter
 
         recommendations = recommend_songs(k, user_k, user_v, sim_func, use_weighted)
 

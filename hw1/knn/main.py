@@ -22,7 +22,7 @@ def print_usage_and_quit():
 if len(sys.argv) == 1:
     print_usage_and_quit()
 
-modes = ['-bl_random', '-bl_popular', '-user', '-artist', '-knn']
+modes = ['-bl_random', '-bl_popular', '-user', '-artist', '-knn', '-knn_all']
 mode = sys.argv[1].lower()
 if mode not in modes:
     print "Invalid mode!"
@@ -78,6 +78,45 @@ elif mode == modes[4]:
     print 'Precision@10 for k={k}, {weighted_str}, ' \
           '{sim_func_str} similarity:\n{prec_at_10}'.format(**locals())
 
+# Run KNN
+elif mode == modes[5]:
+    if len(sys.argv) < 5:
+        print 'Too few arguments!'
+        print_usage_and_quit()
+
+    # Get K
+    k = int(sys.argv[2])
+    # Get weighted
+    weighted = False if sys.argv[3] == '0' else True
+    weighted_str = "weighted" if weighted else "non-weighted"
+    # Get sim metric
+    sim_metric = sys.argv[4]
+    if sim_metric == '0':
+        sim_func = inverse_euclidean
+        sim_func_str = "inverse euclidean"
+    elif sim_metric == '1':
+        sim_func = dot_product
+        sim_func_str = "dot product"
+    elif sim_metric == '2':
+        sim_func = cos
+        sim_func_str = "cosine"
+    else:
+        print 'Invalid similarity metric flag'
+        print_usage_and_quit()
+
+    # Load cache
+    if len(sys.argv) >= 6 and sys.argv[5] != '0':
+        load_cache(sim_func_str.replace(" ", "_"))
+        print 'Loading cache from file'
+    else:
+        print 'Not loading cache from file'
+
+    # Run knn
+    K = [1, 3, 5, 10, 25, 50, 100, 250, 500, 1000]
+    for k in K:
+        prec_at_10 = baseline_knn(k, sim_func, weighted)
+        print 'Precision@10 for k={k}, {weighted_str}, ' \
+              '{sim_func_str} similarity:\n{prec_at_10}'.format(**locals())
 # Artist or user
 else:
     if len(sys.argv) < 6:
