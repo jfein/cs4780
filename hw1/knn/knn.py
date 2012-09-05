@@ -7,7 +7,7 @@ from util import *
 
 
 SONG_DATA = load_song_data('song_mapping.txt')
-training = parse_training('user_training_wheels.txt')
+training = parse_training('user_train.txt')
 test = parse_test('user_test.txt')
 
 

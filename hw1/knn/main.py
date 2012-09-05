@@ -104,6 +104,7 @@ else:
     if mode == '-user':
         user_id = int(sys.argv[2])
         user_query(user_id, k, sim_func, weighted)
+    # Do an artist query
     elif mode == '-artist':
         artist_name = sys.argv[2]
         artist_query(artist_name, k, sim_func, weighted)
