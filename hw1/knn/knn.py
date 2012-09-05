@@ -82,10 +82,10 @@ def recommend_songs(k, test_vector, training_examples, sim_func, use_weighted):
     start = time.time()
     knn_pairs = find_knn(k, test_vector, training_examples, sim_func)
     after_knn = time.time()
-    print 'finding knn took', after_knn - start, 'seconds'
+    #print 'finding knn took', after_knn - start, 'seconds'
     R = construct_ranking_vector(knn_pairs, use_weighted)
     after_r = time.time()
-    print 'constructing r took', after_r - after_knn, 'seconds'
+    #print 'constructing r took', after_r - after_knn, 'seconds'
 
     # Now we just sort recommendations
     # and take the top 10, making sure to 
@@ -98,7 +98,7 @@ def recommend_songs(k, test_vector, training_examples, sim_func, use_weighted):
         if recommendation not in test_vector:
             recommendations.append(recommendation)
 
-    print 'finding top 10 recommendations took', time.time() - after_r, 'seconds'
+    #print 'finding top 10 recommendations took', time.time() - after_r, 'seconds'
     return recommendations
 
 
@@ -123,6 +123,28 @@ def user_query(user_id, k, sim_func, use_weighted):
         title, artist = SONG_DATA[song_id]
         print song_id, "\t", title, "\t", artist
 
+def artist_query(artist, k, sim_func, use_weighted):
+    # First need to build artist query. Go through
+    # and if either the artist or song title have 
+    # the artist string in it, record a 1 in that
+    # place in the vector
+    artist_lower = artist.lower()
+    vector = {}
+    for song_id in SONG_DATA:
+        title, song_artist = SONG_DATA[song_id]
+        if artist_lower in title.lower() or artist_lower in song_artist.lower():
+            vector[song_id] = 1
+
+    print "10 Songs by ", artist
+    for song_id in vector.keys()[:10]:
+        title, song_artist = SONG_DATA[song_id]
+        print title, "\t", song_artist
+
+    recommendations = recommend_songs(k, vector, training.values(), sim_func, use_weighted)
+    print "\n\nTop 10 Recommended Songs"
+    for song_id in recommendations:
+        title, artist = SONG_DATA[song_id]
+        print song_id, "\t", title, "\t", artist
 
 def baseline_random():
     # first we need to get all the song ids
