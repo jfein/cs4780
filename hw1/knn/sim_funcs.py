@@ -24,11 +24,14 @@ def inverse_euclidean(v1, v2):
         return 1 / math.sqrt(squared_sum)
 
 def dot_product(v1, v2):
-    keys = set(v1.keys() + v2.keys())
     dp = 0.0
-    for song_id in keys:
-        dp += v1.get(song_id, 0) * v2.get(song_id, 0)
-
+    # Pass through v1
+    for song_id, plays in v1.iteritems():
+        dp += plays * v2.get(song_id, 0)
+    # Pass through v2
+    for sing_id, plays in v2.iteritems():
+        if not song_id in v1:
+            dp += v1.get(song_id, 0) * plays
     return dp
 
 def cos(v1, v2):
