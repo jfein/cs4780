@@ -6,14 +6,14 @@ import time
 from util import *
 
 
-DISTANCE_CACHE = {}
 SONG_DATA = load_song_data('song_mapping.txt')
 training = parse_training('user_train.txt')
 test = parse_test('user_test.txt')
 
-def find_knn(k, test_vector, training_examples, sim_func):
+
+def find_knn(k, user_k, user_v, sim_func):
     '''
-    Find the k nearest neighbors of test_vector in the
+    Find the k nearest neighbors of vector in the
     training_examples. Distance is determined
     by sim_func. Sim_func must be a function that
     takes in two vectors Represented by dictionaries of
@@ -25,15 +25,15 @@ def find_knn(k, test_vector, training_examples, sim_func):
     '''
 
     # Go through and compute distances b/w
-    # test vector and every training example,
-    # placing results on a heap so we can
-    # easily extract k nearest afterwards
+    # vector and every training example,
     heap = []
-    for example in training_examples:
-        dist = sim_func(test_vector, example)
-        #heapq.heappush(heap, (dist, example))
-        heap.append((dist, example))
+    for example_k, example_v in training.iteritems():
+        # Skip comparing to yourself
+        if example_k != user_k:
+            dist = sim_func(user_k, user_v, example_k, example_v)
+            heap.append((dist, example_v))
 
+    # Extract the k closest examples
     return heapq.nsmallest(k, heap, key=operator.itemgetter(0))
 
 
@@ -75,49 +75,55 @@ def construct_ranking_vector(knn_pairs, use_weighted):
     return R
 
 
-def recommend_songs(k, test_vector, training_examples, sim_func, use_weighted):
+def recommend_songs(k, user_k, user_v, sim_func, use_weighted):
     '''
     Returns a list of the top 10 recommended songs
     '''
+    # Find knn
+    start = time.time()
+    knn_pairs = find_knn(k, user_k, user_v, sim_func)
+    end = time.time()
+    #print 'finding knn took', end - start, 'seconds'
+    
+    # Find ranking vector
     start = time.time()
     knn_pairs = find_knn(k, test_vector, training_examples, sim_func)
     after_knn = time.time()
     #print 'finding knn took', after_knn - start, 'seconds'
     R = construct_ranking_vector(knn_pairs, use_weighted)
-    after_r = time.time()
-    #print 'constructing r took', after_r - after_knn, 'seconds'
+    end = time.time()
+    #print 'constructing r took', end - start, 'seconds'
 
     # Now we just sort recommendations
     # and take the top 10, making sure to 
     # check that the user hasn't already played that song
-
+    start = time.time()
     sorted_R = sorted(R.iteritems(), key=operator.itemgetter(1))
     recommendations = []
     while len(recommendations) < 10 and len(sorted_R) > 0:
         recommendation, _ = sorted_R.pop()
-        if recommendation not in test_vector:
+        if recommendation not in user_v:
             recommendations.append(recommendation)
-
-    #print 'finding top 10 recommendations took', time.time() - after_r, 'seconds'
+    end = time.time()
+    #print 'finding top 10 recommendations took', end - start, 'seconds'
+    
     return recommendations
 
 
-def user_query(user_id, k, sim_func, use_weighted):
-    test_vector = training[user_id]
-    del training[user_id]
-    training_examples = training.values()
+def user_query(user_k, k, sim_func, use_weighted):
+    user_v = training[user_k]
 
     # Go through and find the most played songs for user
-    most_played = sorted(test_vector.iteritems(), key=operator.itemgetter(1),
-                          reverse=True)
-    print 'Most played for user', user_id
+    most_played = sorted(user_v.iteritems(), key=operator.itemgetter(1), reverse=True)
+    print 'Most played for user', user_k
     print "Song ID\tTitle\tArtists\tPlays"
     for song_id, plays in most_played[:10]:
         title, artist = SONG_DATA[song_id]
         print song_id, "\t", title, "\t", artist, '\t', plays
 
-    recommendations = recommend_songs(k, test_vector, training_examples, sim_func, use_weighted)
-    print "\n\nTop 10 Recommended Songs for user ", user_id
+    # Find recommendations
+    recommendations = recommend_songs(k, user_k, user_v, sim_func, use_weighted)
+    print "\n\nTop 10 Recommended Songs for user ", user_k
     print "Song ID\tTitle\tArtists\t"
     for song_id in recommendations:
         title, artist = SONG_DATA[song_id]
@@ -148,15 +154,7 @@ def artist_query(artist, k, sim_func, use_weighted):
 
 def baseline_random():
     # first we need to get all the song ids
-    song_ids = set()
-    training_examples = training.values()
-    for training_example in training_examples:
-        for song_id in training_example.keys():
-            song_ids.add(song_id)
-
-    for test_example in test.values():
-        for song_id in test_example:
-            song_ids.add(song_id)
+    song_ids = SONG_DATA.keys()
 
     total_prec_at_10 = 0.0
     for _, ommitted_songs in test.items():
@@ -178,8 +176,7 @@ def baseline_most_popular():
         for song_id, plays in song_map.iteritems():
             song_totals[song_id] = song_totals.get(song_id, 0) + plays
 
-    sorted_totals = sorted(song_totals.iteritems(), key=operator.itemgetter(1),
-                           reverse=True)
+    sorted_totals = sorted(song_totals.iteritems(), key=operator.itemgetter(1), reverse=True)
     recommendations = [song for song, _ in sorted_totals[:10]]
 
     total_prec_at_10 = 0.0
@@ -198,17 +195,20 @@ def baseline_most_popular():
 def baseline_knn(k, sim_func, use_weighted):
     total_prec_at_10 = 0.0
     counter = 0
+    
     print len(training)
-    for user_id, test_vector in training.iteritems():
+    
+    # Get recommendations for each user vector
+    for user_k, user_v in training.iteritems():
         counter += 1
         if counter % 100 == 0:
             print counter
-        recommendations = recommend_songs(k, test_vector, training.values(),
-                                          sim_func, use_weighted)
+            
+        recommendations = recommend_songs(k, user_k, user_v, sim_func, use_weighted)
 
         matched = 0
         for recommendation in recommendations:
-            if recommendation in test[user_id]:
+            if recommendation in test[user_k]:
                 matched += 1
         total_prec_at_10 += matched / 10.0
 

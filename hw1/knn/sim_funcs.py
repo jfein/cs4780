@@ -1,12 +1,29 @@
-'''
-Created on Sep 4, 2012
-
-@author: Will
-'''
-
 import math
 
-def inverse_euclidean(v1, v2):
+
+CACHE = {}
+
+
+def cache_gen_key(u1, u2):
+    s = sorted([u1, u2])
+    return "{0}-{1}".format(s[0], s[1])
+    
+    
+def cache_get(u1, u2):
+    return None
+    return CACHE.get(cache_gen_key(u1, u2))
+
+    
+def cache_set(u1, u2, v):
+    k = cache_gen_key(u1, u2)
+    CACHE[k] = v
+
+    
+def inverse_euclidean(u1, v1, u2, v2):
+    cache = cache_get(u1, u2)
+    if not cache is None:
+        return cache
+
     squared_sum = 0.0
     # Pass through v1
     for song_id, plays in v1.iteritems():
@@ -19,11 +36,19 @@ def inverse_euclidean(v1, v2):
             squared_sum += unquared_sum ** 2
 
     if squared_sum == 0:
-        return 1
+        ret = 1
     else:
-        return 1 / math.sqrt(squared_sum)
+        ret = 1 / math.sqrt(squared_sum)
+        
+    cache_set(u1, u2, ret)
+    return ret
 
-def dot_product(v1, v2):
+    
+def dot_product(u1, v1, u2, v2):
+    cache = cache_get(u1, u2)
+    if not cache is None:
+        return cache
+        
     dp = 0.0
     # Pass through v1
     for song_id, plays in v1.iteritems():
@@ -32,9 +57,16 @@ def dot_product(v1, v2):
     for sing_id, plays in v2.iteritems():
         if not song_id in v1:
             dp += v1.get(song_id, 0) * plays
+            
+    cache_set(u1, u2, dp)
     return dp
 
-def cos(v1, v2):
+    
+def cos(u1, v1, u2, v2):
+    cache = cache_get(u1, u2)
+    if not cache is None:
+        return cache
+        
     magnitude_v1 = 0.0
     magnitude_v2 = 0.0
     for plays in v1.values():
@@ -46,4 +78,7 @@ def cos(v1, v2):
     magnitude_v1 = math.sqrt(magnitude_v1)
     magnitude_v2 = math.sqrt(magnitude_v2)
 
-    return dot_product(v1, v2) / (magnitude_v1 * magnitude_v2)
+    ret = dot_product(v1, v2) / (magnitude_v1 * magnitude_v2)
+    
+    cache_set(u1, u2, ret)
+    return ret

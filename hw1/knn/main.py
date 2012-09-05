@@ -66,7 +66,7 @@ elif mode == modes[4]:
     prec_at_10 = baseline_knn(k, sim_func, weighted)
     
     print 'Precision@10 for k={k}, {weighted_str}, ' \
-          '{sum_func_str} similarity:\n{prec_at_10}'.format(**locals())
+          '{sim_func_str} similarity:\n{prec_at_10}'.format(**locals())
 
 # Artist or user
 else:
