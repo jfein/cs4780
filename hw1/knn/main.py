@@ -3,6 +3,8 @@ Created on Sep 4, 2012
 
 @author: Will
 '''
+
+import sys
 from knn import *
 
 def print_usage_and_quit():
