@@ -1,8 +1,3 @@
-'''
-Created on Aug 29, 2012
-
-@author: Will
-'''
 import heapq
 import random
 import operator
@@ -14,6 +9,8 @@ from util import *
 
 DISTANCE_CACHE = {}
 SONG_DATA = load_song_data('song_mapping.txt')
+training = parse_training('user_train.txt')
+test = parse_test('user_test.txt')
 
 def find_knn(k, test_vector, training_examples, sim_func):
     '''
@@ -106,7 +103,7 @@ def recommend_songs(k, test_vector, training_examples, sim_func, use_weighted):
     return recommendations
 
 
-def user_query(training, user_id, k, sim_func, use_weighted):
+def user_query(user_id, k, sim_func, use_weighted):
     test_vector = training[user_id]
     del training[user_id]
     training_examples = training.values()
@@ -128,9 +125,7 @@ def user_query(training, user_id, k, sim_func, use_weighted):
         print song_id, "\t", title, "\t", artist
 
 
-
-
-def baseline_random(training, test):
+def baseline_random():
     # first we need to get all the song ids
     song_ids = set()
     training_examples = training.values()
@@ -156,29 +151,7 @@ def baseline_random(training, test):
            total_prec_at_10 / len(test)
 
 
-def baseline_knn(training, test, k, sim_func, use_weighted):
-
-    total_prec_at_10 = 0.0
-    counter = 0
-    print len(training)
-    for user_id, test_vector in training.iteritems():
-        counter += 1
-        if counter % 100 == 0:
-            print counter
-        recommendations = recommend_songs(k, test_vector, training.values(),
-                                          sim_func, use_weighted)
-
-        matched = 0
-        for recommendation in recommendations:
-            if recommendation in test[user_id]:
-                matched += 1
-        total_prec_at_10 += matched / 10.0
-
-    prec_at_10 = total_prec_at_10 / len(training)
-
-    return prec_at_10
-
-def baseline_most_popular(training, test):
+def baseline_most_popular():
     song_totals = {}
     for song_map in training.values():
         for song_id, plays in song_map.iteritems():
@@ -200,15 +173,24 @@ def baseline_most_popular(training, test):
     print 'Average Precision at 10 using most popular = ', \
            total_prec_at_10 / len(test)
 
-training = parse_training('user_train.txt')
-test = parse_test('user_test.txt')
 
+def baseline_knn(k, sim_func, use_weighted):
+    total_prec_at_10 = 0.0
+    counter = 0
+    print len(training)
+    for user_id, test_vector in training.iteritems():
+        counter += 1
+        if counter % 100 == 0:
+            print counter
+        recommendations = recommend_songs(k, test_vector, training.values(),
+                                          sim_func, use_weighted)
 
+        matched = 0
+        for recommendation in recommendations:
+            if recommendation in test[user_id]:
+                matched += 1
+        total_prec_at_10 += matched / 10.0
 
+    prec_at_10 = total_prec_at_10 / len(training)
 
-'''
-for uid, songmap in training.iteritems():
-    print uid
-    print songmap
-    print ''
-'''
+    return prec_at_10
