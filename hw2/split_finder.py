@@ -1,5 +1,4 @@
 import math
-import parser
 
 def split_finder(sample_set):
     '''

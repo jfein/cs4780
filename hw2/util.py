@@ -1,9 +1,5 @@
-'''
-Created on Sep 17, 2012
-
-@author: Will
-'''
 import re
+
 TRAINING_FILE_NAME = "wifi.train"
 TEST_FILE_NAME = "wifi.test"
 
@@ -33,5 +29,3 @@ def load_training():
         training.append((signal_map, location))
 
     return training
-
-load_training()
