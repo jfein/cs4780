@@ -7,21 +7,29 @@ def test_accuracy(root, data):
     total = {}
     
     for point, location in data:
-        total[location] += 1.0
+        total[location] = total.get(location, 0) + 1.0
         if classify(root, point) != location:
-            wrong[location] += 1.0
+            wrong[location] = wrong.get(location, 0) + 1.0
     
     err_locs = dict( (n, wrong.get(n, 0) / total.get(n, 0)) for n in set(wrong)|set(total) )
     err_all = sum(wrong.values()) / sum(total.values())
     return (err_locs , err_all)
     
 
+    
+training_data = load_training("wifi.train")
+test_data = load_training("wifi.test")
 
-data = load_training()
+root = gen_tree(training_data)
 
-root = gen_tree(data)
+err_locs, err_all = test_accuracy(root, training_data)
+print "TEST ACCURACY ON TRAINING SET:\n"
+print "LOCATION SPECIFIC ERRORS:\n{0}\n".format(err_locs)
+print "OVERALL ERROR:\n{0}".format(err_all)
 
-err_locs, err_all = test_accuracy(root, data)
+print "\n"
 
+err_locs, err_all = test_accuracy(root, test_data)
+print "TEST ACCURACY ON TRAINING SET:\n"
 print "LOCATION SPECIFIC ERRORS:\n{0}\n".format(err_locs)
 print "OVERALL ERROR:\n{0}".format(err_all)

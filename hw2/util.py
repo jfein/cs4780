@@ -1,15 +1,13 @@
 import re
 
-TRAINING_FILE_NAME = "wifi.train"
-TEST_FILE_NAME = "wifi.test"
 
-def load_training():
+def load_training(file):
     '''
     Load the training data and return it as a list of
     (signal_map, location) tuples, where signal_map is a 
     map from
     '''
-    training_file = open(TRAINING_FILE_NAME, 'r')
+    training_file = open(file, 'r')
 
     signal_pattern = re.compile(r'\d:\s?-\d{1,2}')
     location_pattern = re.compile(r'[A-Z]+_?\d?')
