@@ -9,8 +9,6 @@ def split_finder(sample_set):
     '''
     sample_size = float(len(sample_set))
 
-    if len(sample_set) == 2:
-        print sample_set
     all_signal_ids = set()
     all_signal_strengths = set()
 
@@ -40,11 +38,6 @@ def split_finder(sample_set):
                     right_subset.append((signal_map, location))
             entropy = (len(left_subset) / sample_size) * calculate_entropy(left_subset) + \
                       (len(right_subset) / sample_size) * calculate_entropy(right_subset)
-
-            if len(sample_set) == 2:
-                print "\t", entropy
-                print "\t\t", left_subset
-                print "\t\t", right_subset
 
             if entropy < min_entropy:
                 min_entropy = entropy
