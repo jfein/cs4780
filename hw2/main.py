@@ -1,5 +1,5 @@
 import random
-from decission_tree import gen_tree, classify, max_depth
+from decision_tree import gen_tree, classify, max_depth
 from util import load_training
 
 
