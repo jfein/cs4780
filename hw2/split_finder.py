@@ -1,5 +1,6 @@
 import math
 
+
 def split_finder(sample_set):
     '''
     Sample set is a list of
@@ -69,4 +70,3 @@ def calculate_entropy(sample_set):
         entropy += -1.0 * location_prob * math.log(location_prob, 2)
 
     return entropy
-

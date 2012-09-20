@@ -36,6 +36,12 @@ def count_occurences(root):
         for loc, count in count_occurences(root.right_node).items():
             occurences[loc] = occurences.get(loc, 0) + count
         return occurences
+
+        
+def max_depth(root):
+    if isinstance(root, Leaf):
+        return 1
+    return 1 + max(max_depth(root.left_node), max_depth(root.right_node))
             
         
 def gen_tree(data):
@@ -69,5 +75,3 @@ def classify(node, point, stop_depth=-1, cur_depth=0):
         return classify(node.left_node, point, stop_depth, cur_depth+1)
     else:
         return classify(node.right_node, point, stop_depth, cur_depth+1)
-
-        
