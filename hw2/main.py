@@ -46,18 +46,18 @@ def cross_validate(fold, data):
     random.shuffle(data)
     chunks = make_chunks(data, fold)
 
-    total_err = 0
-    total_err_prune = 0
+    err = []
+    err_prune = []
     for i in range(fold):
         test_data = chunks[i]
         train_data = chunks[:i] + chunks[i+1:]
         
         root = gen_tree(training_data)
         
-        total_err += test_accuracy(root, test_data)[1]
-        total_err_prune += test_accuracy(root, test_data, 2)[1]
+        err.append(test_accuracy(root, test_data)[1])
+        err_prune.append(test_accuracy(root, test_data, 2)[1])
         
-    return (total_err / fold , total_err_prune / fold)
+    return (err , err_prune)
     
 
 def validation_error(test_data, train_data_orig, validate_ratio):
@@ -127,13 +127,18 @@ print "\n"
 
 err , err_prune = cross_validate(10, training_data + test_data)
 print "CROSS VALIDATE 10-FOLD AVERAGE ERRORS:"
-print "\tNO PRUNING:\t{0}".format(err)
-print "\tPRUNE 2:\t{0}".format(err_prune)
+print "\tNo Prune ; Prune ; Difference"
+avg_diff = 0
+for k1, k2 in zip(err, err_prune):
+    print "\t{0} ; {1} ; {2}".format(k1, k2, k1-k2)
+    avg_diff += k1-k2
+avg_diff = avg_diff / len(err)
+print "Average Difference: {0}".format(avg_diff)
 
 print "\n"
 
 print "VALIDATION SET TESTING:"
 for ratio in map(lambda x: x/10.0, range(1, 10)):
-    for i in range(100):
+    for i in range(10):
         err = validation_error(test_data, training_data, ratio)
-        print "\t{0:f} : {1:f}".format(ratio, err)
+        print "\t{0} : {1:f}".format(ratio, err)
